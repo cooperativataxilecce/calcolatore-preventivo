@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Preventivo Taxi - Cooperativa Taxi Lecce</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+
+body{
+
+margin:0;
+background:#f4f4f4;
+font-family:'Montserrat',Arial,sans-serif;
+color:#222;
+
+}
+
+
+.box{
+
+width:90%;
+max-width:430px;
+margin:40px auto;
+background:white;
+padding:30px;
+border-radius:18px;
+box-shadow:0 5px 20px rgba(0,0,0,0.12);
+
+}
+
+
+
+.logo{
+
+display:block;
+width:130px;
+margin:0 auto 20px;
+
+}
+
+
+
+h1{
+
+text-align:center;
+font-size:27px;
+margin:0;
+
+}
+
+
+
+.sottotitolo{
+
+text-align:center;
+color:#f58220;
+font-size:19px;
+font-weight:600;
+margin:10px 0 20px;
+
+}
+
+
+
+.descrizione{
+
+text-align:center;
+font-size:13px;
+color:#666;
+line-height:1.6;
+
+}
+
+
+
+label{
+
+display:block;
+margin-top:18px;
+font-weight:600;
+font-size:14px;
+
+}
+
+
+
+input{
+
+width:100%;
+padding:13px;
+margin-top:7px;
+border-radius:8px;
+border:1px solid #ddd;
+font-family:'Montserrat';
+
+}
+
+
+
+.checkbox{
+
+display:flex;
+align-items:center;
+gap:8px;
+
+}
+
+
+.checkbox input{
+
+width:auto;
+
+}
+
+
+
+button{
+
+width:100%;
+margin-top:25px;
+padding:15px;
+
+border:0;
+border-radius:8px;
+
+background:#f58220;
+
+color:white;
+
+font-size:15px;
+font-weight:600;
+
+cursor:pointer;
+
+}
+
+
+
+#prenota{
+
+display:none;
+
+background:#25D366;
+
+}
+
+
+
+#risultato{
+
+margin-top:25px;
+text-align:center;
+font-size:18px;
+font-weight:600;
+line-height:1.6;
+
+}
+
+
+
+.supplementi{
+
+font-size:13px;
+color:#666;
+font-weight:400;
+margin-top:15px;
+
+}
+
+
+
+.avviso{
+
+width:90%;
+max-width:430px;
+margin:20px auto;
+
+text-align:center;
+font-size:12px;
+color:#666;
+
+line-height:1.6;
+
+}
+
+
+</style>
+
+
+</head>
+
+
+
+<body>
+
+
+<div class="box">
+
+
+<img class="logo" src="https://raw.githubusercontent.com/cooperativataxilecce/Calcolatore-Cooperativa-Taxi-Lecce/main/logo.png">
+
+
+
+<h1>
+Cooperativa Taxi Lecce
+</h1>
+
+
+<div class="sottotitolo">
+Calcola il tuo preventivo
+</div>
+
+
+
+<div class="descrizione">
+
+Inserisci gli indirizzi completi di partenza e destinazione (es: Piazza Sant'Oronzo, Lecce, oppure, Aeroporto di Brindisi, Brindisi).
+
+</div>
+
+
+
+
+<label>
+Partenza
+</label>
+
+<input id="partenza" placeholder="Indirizzo completo di partenza">
+
+
+
+<label>
+Destinazione
+</label>
+
+<input id="destinazione" placeholder="Indirizzo completo di destinazione">
+
+
+
+<label>
+Ora del servizio
+</label>
+
+<input id="ora" type="time">
+
+
+
+<label>
+Numero bagagli
+</label>
+
+<input id="bagagli" type="number" min="0" value="0">
+
+
+
+<label class="checkbox">
+
+<input id="festivo" type="checkbox">
+
+Servizio festivo (+3€)
+
+</label>
+
+
+
+
+<button onclick="calcola()">
+
+Calcola preventivo
+
+</button>
+
+
+
+<div id="risultato"></div>
+
+
+
+<button id="prenota" onclick="vaiPrenotazione()">
+
+Prenota servizio
+
+</button>
+
+
+
+</div>
+
+
+
+<div class="avviso">
+
+Il preventivo è puramente indicativo e può variare in base al percorso effettivo, al traffico e alle condizioni del servizio. Il calcolatore può commettere errori, ti consigliamo di verificare il prezzo contattandoci.
+
+</div>
+
+
+
+
+
+<script>
+
+
+
+async function geocode(indirizzo){
+
+
+let risposta = await fetch(
+
+"https://nominatim.openstreetmap.org/search?format=json&q="
++
+encodeURIComponent(indirizzo)
+
+);
+
+
+
+let dati = await risposta.json();
+
+
+
+if(dati.length===0){
+
+throw "Indirizzo non trovato";
+
+}
+
+
+
+return {
+
+lat:dati[0].lat,
+
+lon:dati[0].lon
+
+};
+
+
+}
+
+
+
+
+async function calcola(){
+
+
+
+let risultato=document.getElementById("risultato");
+
+
+risultato.innerHTML="Calcolo in corso...";
+
+
+
+try{
+
+
+
+let partenza =
+await geocode(
+document.getElementById("partenza").value
+);
+
+
+
+let destinazione =
+await geocode(
+document.getElementById("destinazione").value
+);
+
+
+
+let url =
+
+"https://router.project-osrm.org/route/v1/driving/"
++
+partenza.lon+","+partenza.lat+
+";"+
+destinazione.lon+","+destinazione.lat+
+"?overview=false";
+
+
+
+let risposta=await fetch(url);
+
+
+let percorso=await risposta.json();
+
+
+
+let km=percorso.routes[0].distance/1000;
+
+
+
+let prezzo=5+(km*1.65);
+
+
+
+let dettagli=[];
+
+
+
+let ora=document.getElementById("ora").value;
+
+
+
+if(ora){
+
+
+let oraNumero=Number(ora.split(":")[0]);
+
+
+
+if(oraNumero>=21 && oraNumero<24){
+
+prezzo+=3;
+
+dettagli.push("Servizio notturno 21:00-00:00: +3€");
+
+}
+
+
+if(oraNumero>=0 && oraNumero<6){
+
+prezzo+=5;
+
+dettagli.push("Servizio notturno 00:00-06:00: +5€");
+
+}
+
+}
+
+
+
+
+let bagagli=Number(
+document.getElementById("bagagli").value
+);
+
+
+
+if(bagagli>0){
+
+prezzo+=bagagli;
+
+dettagli.push(
+"Bagagli ("+bagagli+"): +"+bagagli+"€"
+);
+
+}
+
+
+
+
+if(document.getElementById("festivo").checked){
+
+prezzo+=3;
+
+dettagli.push("Servizio festivo: +3€");
+
+}
+
+
+
+
+if(prezzo<10){
+
+prezzo=10;
+
+}
+
+
+
+
+
+risultato.innerHTML=
+
+"Distanza: "
++
+km.toFixed(1)
++
+" km"
+
++
+"<br><br>"
+
++
+"Preventivo stimato: "
++
+prezzo.toFixed(2)
++
+" €"
+
++
+
+"<div class='supplementi'>"
+
++
+
+(dettagli.length>0
+
+?
+
+"<br><b>Supplementi applicati:</b><br>"+dettagli.join("<br>")
+
+:
+
+"<br>Nessun supplemento applicato"
+
+)
+
++
+
+"</div>";
+
+
+
+
+document.getElementById("prenota").style.display="block";
+
+
+
+}
+
+
+
+catch(e){
+
+
+risultato.innerHTML="Errore. Controlla gli indirizzi inseriti.";
+
+}
+
+
+
+}
+
+
+
+
+
+function vaiPrenotazione(){
+
+
+window.location.href="prenotazione.html";
+
+
+}
+
+
+
+</script>
+
+
+</body>
+
+</html>
