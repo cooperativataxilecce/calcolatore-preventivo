@@ -41,7 +41,6 @@ box-shadow:0 5px 20px rgba(0,0,0,0.12);
 }
 
 
-
 .logo{
 
 display:block;
@@ -51,7 +50,6 @@ margin:0 auto 20px;
 }
 
 
-
 h1{
 
 text-align:center;
@@ -59,7 +57,6 @@ font-size:27px;
 margin:0;
 
 }
-
 
 
 .sottotitolo{
@@ -73,7 +70,6 @@ margin:10px 0 20px;
 }
 
 
-
 .descrizione{
 
 text-align:center;
@@ -84,7 +80,6 @@ line-height:1.6;
 }
 
 
-
 label{
 
 display:block;
@@ -93,7 +88,6 @@ font-weight:600;
 font-size:14px;
 
 }
-
 
 
 input{
@@ -108,7 +102,6 @@ font-family:'Montserrat';
 }
 
 
-
 .checkbox{
 
 display:flex;
@@ -121,6 +114,50 @@ gap:8px;
 .checkbox input{
 
 width:auto;
+
+}
+
+
+
+.privacy{
+
+display:flex;
+align-items:center;
+gap:8px;
+margin-top:22px;
+font-size:12px;
+color:#555;
+
+}
+
+
+.privacy input{
+
+width:auto;
+
+}
+
+
+.privacy label{
+
+margin:0;
+font-weight:400;
+font-size:12px;
+
+}
+
+
+.privacy a{
+
+color:#f58220;
+text-decoration:none;
+
+}
+
+
+.privacy a:hover{
+
+text-decoration:underline;
 
 }
 
@@ -226,7 +263,7 @@ Calcola il tuo preventivo
 
 <div class="descrizione">
 
-Inserisci gli indirizzi completi di partenza e destinazione (es: Piazza Sant'Oronzo, Lecce, oppure, Aeroporto di Brindisi, Brindisi).
+Inserisci gli indirizzi completi di partenza e destinazione (es: Piazza Sant'Oronzo, Lecce, oppure Aeroporto di Brindisi, Brindisi).
 
 </div>
 
@@ -275,6 +312,24 @@ Servizio in giorno festivo o domenicale
 
 
 
+<div class="privacy">
+
+<input id="privacy" type="checkbox">
+
+<label for="privacy">
+
+Dichiaro di aver letto e accettato
+
+<a href="https://www.cooperativataxilecce.it/pagina/informativa-sulla-privacy" target="_blank">
+l'informativa sulla privacy
+</a>
+
+</label>
+
+</div>
+
+
+
 
 <button onclick="calcola()">
 
@@ -313,9 +368,7 @@ Il preventivo è puramente indicativo e può variare in base al percorso effetti
 <script>
 
 
-
 async function geocode(indirizzo){
-
 
 let risposta = await fetch(
 
@@ -326,9 +379,7 @@ encodeURIComponent(indirizzo)
 );
 
 
-
 let dati = await risposta.json();
-
 
 
 if(dati.length===0){
@@ -336,7 +387,6 @@ if(dati.length===0){
 throw "Indirizzo non trovato";
 
 }
-
 
 
 return {
@@ -347,13 +397,24 @@ lon:dati[0].lon
 
 };
 
-
 }
 
 
 
 
 async function calcola(){
+
+
+let privacy=document.getElementById("privacy").checked;
+
+
+if(!privacy){
+
+alert("Devi accettare l'informativa sulla privacy per procedere.");
+
+return;
+
+}
 
 
 
@@ -480,7 +541,6 @@ if(prezzo<10){
 prezzo=10;
 
 }
-
 
 
 
