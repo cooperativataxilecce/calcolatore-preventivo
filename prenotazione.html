@@ -131,6 +131,50 @@ resize:none;
 
 
 
+.privacy{
+
+display:flex;
+
+align-items:center;
+
+gap:8px;
+
+margin-top:22px;
+
+font-size:12px;
+
+color:#555;
+
+}
+
+
+.privacy input{
+
+width:auto;
+
+}
+
+
+.privacy label{
+
+margin:0;
+
+font-size:12px;
+
+font-weight:400;
+
+}
+
+
+.privacy a{
+
+color:#f58220;
+
+text-decoration:none;
+
+}
+
+
 button{
 
 width:100%;
@@ -283,6 +327,26 @@ Note extra (facoltativo)
 
 
 
+<div class="privacy">
+
+<input type="checkbox" id="privacy">
+
+
+<label for="privacy">
+
+Dichiaro di aver letto e accettato
+
+<a href="https://www.cooperativataxilecce.it/pagina/informativa-sulla-privacy" target="_blank">
+l'informativa sulla privacy
+</a>
+
+</label>
+
+</div>
+
+
+
+
 <button onclick="inviaWhatsApp()">
 
 Invia prenotazione WhatsApp
@@ -301,6 +365,19 @@ Invia prenotazione WhatsApp
 
 
 function inviaWhatsApp(){
+
+
+let privacy =
+document.getElementById("privacy").checked;
+
+
+if(!privacy){
+
+alert("Devi accettare l'informativa sulla privacy per procedere.");
+
+return;
+
+}
 
 
 
@@ -334,7 +411,6 @@ document.getElementById("passeggeri").value;
 
 let note =
 document.getElementById("note").value;
-
 
 
 
@@ -418,6 +494,10 @@ let messaggio =
 +
 
 "%0A%0A"
+
++
+
+"Il cliente ha accettato l'informativa sulla privacy.%0A%0A"
 
 +
 
